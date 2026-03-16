@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetSense - My Pets</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            -webkit-font-smoothing: antialiased;
+            background: #fdf2f4;
+            margin: 0;
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease forwards;
+            opacity: 0;
+        }
+
+        .delay-100 {
+            animation-delay: 100ms;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+        }
+
+        .pet-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .pet-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(217, 75, 104, 0.12);
+        }
+    </style>
+</head>
+
+<body class="min-h-screen">
+
+    <!-- Header -->
+    <header
+        class="w-full px-6 py-6 md:px-12 lg:px-20 flex items-center justify-between bg-white/70 backdrop-blur-md border-b border-pink-100 sticky top-0 z-50">
+        <a href="/" class="flex items-center gap-3 group">
+            <div
+                class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#d94b68] to-[#c76e7a] shadow-sm flex items-center justify-center text-white group-hover:scale-105 transition-transform">
+                <i class="fa-solid fa-paw text-lg"></i>
+            </div>
+            <span class="text-2xl font-extrabold tracking-tight text-gray-900">Pet<span
+                    class="text-[#d94b68]">Sense</span></span>
+        </a>
+        <nav class="hidden md:flex items-center gap-8">
+            <a href="/predict" class="text-sm font-semibold text-gray-600 hover:text-gray-900 transition-colors">Predict
+                Breed</a>
+            <a href="/pets" class="text-sm font-bold text-[#d94b68] border-b-2 border-[#d94b68] pb-1">Store Pet</a>
+            <a href="/vaccines"
+                class="text-sm font-semibold text-gray-600 hover:text-gray-900 transition-colors">Vaccine Reminders</a>
+        </nav>
+        <a href="/"
+            class="text-sm font-semibold text-gray-500 hover:text-gray-900 transition-colors flex items-center gap-1">
+            <i class="fa-solid fa-arrow-left text-xs"></i> Home
+        </a>
+    </header>
+
+    <!-- Main -->
+    <main class="max-w-6xl mx-auto px-6 py-10">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-10 gap-4 animate-fade-in">
+            <div>
+                <h1 class="text-4xl font-extrabold text-gray-900 tracking-tight mb-2">
+                    <i class="fa-solid fa-heart text-[#d94b68] mr-2"></i>My <span class="text-[#d94b68]">Pets</span>
+                </h1>
+                <p class="text-gray-500">Manage your beloved pets' profiles.</p>
+            </div>
+            <div class="flex gap-3">
+                <a href="/predict"
+                    class="px-5 py-3 rounded-xl bg-white border border-pink-100 text-sm font-bold text-gray-700 hover:bg-pink-50 transition-all flex items-center gap-2 shadow-sm">
+                    <i class="fa-solid fa-camera text-[#d94b68]"></i> Scan New Pet
+                </a>
+                <button onclick="openModal()"
+                    class="px-5 py-3 rounded-xl bg-gray-900 text-white text-sm font-bold hover:bg-gray-800 transition-all flex items-center gap-2 shadow-md">
+                    <i class="fa-solid fa-plus"></i> Add Pet
+                </button>
+            </div>
+        </div>
+
+        <!-- Pet Grid -->
+        <div id="pets-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in delay-100"></div>
+
+        <!-- Empty state -->
+        <div id="empty-state" class="hidden text-center py-20">
+            <div class="w-24 h-24 rounded-full bg-pink-50 flex items-center justify-center mx-auto mb-6">
+                <i class="fa-solid fa-paw text-4xl text-[#d94b68]/30"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-800 mb-2">No pets yet</h3>
+            <p class="text-gray-400 mb-6">Add your first pet or scan one with our AI!</p>
+            <div class="flex gap-3 justify-center">
+                <a href="/predict"
+                    class="px-6 py-3 rounded-xl bg-[#d94b68] text-white font-bold text-sm hover:bg-[#c43d5a] transition-all shadow-md">
+                    <i class="fa-solid fa-camera mr-2"></i> Scan Pet
+                </a>
+                <button onclick="openModal()"
+                    class="px-6 py-3 rounded-xl bg-gray-900 text-white font-bold text-sm hover:bg-gray-800 transition-all shadow-md">
+                    <i class="fa-solid fa-plus mr-2"></i> Add Manually
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Add/Edit Modal -->
+    <div id="modal-overlay"
+        class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4"
+        onclick="if(event.target===this)closeModal()">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between mb-6">
+                <h2 id="modal-title" class="text-xl font-extrabold text-gray-900">Add New Pet</h2>
+                <button onclick="closeModal()"
+                    class="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors">
+                    <i class="fa-solid fa-xmark text-gray-500"></i>
+                </button>
+            </div>
+            <form id="pet-form" onsubmit="savePet(event)" class="space-y-4">
+                <input type="hidden" id="edit-pet-id" value="">
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1.5">Pet Name *</label>
+                    <input type="text" id="form-name" required placeholder="e.g. Buddy"
+                        class="w-full px-4 py-3 rounded-xl border border-pink-100 focus:border-[#d94b68] focus:ring-2 focus:ring-[#d94b68]/20 outline-none text-sm font-medium" />
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1.5">Breed</label>
+                    <input type="text" id="form-breed" placeholder="e.g. Golden Retriever"
+                        class="w-full px-4 py-3 rounded-xl border border-pink-100 focus:border-[#d94b68] focus:ring-2 focus:ring-[#d94b68]/20 outline-none text-sm font-medium" />
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1.5">Type</label>
+                    <div class="flex gap-3">
+                        <label class="flex-1 cursor-pointer">
+                            <input type="radio" name="pet-type" value="dog" checked class="peer hidden" />
+                            <div
+                                class="py-3 rounded-xl border-2 border-pink-100 text-center font-bold text-sm text-gray-500 peer-checked:border-[#d94b68] peer-checked:bg-pink-50 peer-checked:text-[#d94b68] transition-all">
+                                <i class="fa-solid fa-dog mr-1"></i> Dog
+                            </div>
+                        </label>
+                        <label class="flex-1 cursor-pointer">
+                            <input type="radio" name="pet-type" value="cat" class="peer hidden" />
+                            <div
+                                class="py-3 rounded-xl border-2 border-pink-100 text-center font-bold text-sm text-gray-500 peer-checked:border-[#d94b68] peer-checked:bg-pink-50 peer-checked:text-[#d94b68] transition-all">
+                                <i class="fa-solid fa-cat mr-1"></i> Cat
+                            </div>
+                        </label>
+                    </div>
+                </div>
+                <!-- Gender -->
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1.5">Gender</label>
+                    <div class="flex gap-3">
+                        <label class="flex-1 cursor-pointer">
+                            <input type="radio" name="pet-gender" value="male" class="peer hidden" />
+                            <div
+                                class="py-3 rounded-xl border-2 border-pink-100 text-center font-bold text-sm text-gray-500 peer-checked:border-blue-400 peer-checked:bg-blue-50 peer-checked:text-blue-600 transition-all">
+                                <i class="fa-solid fa-mars mr-1"></i> Male
+                            </div>
+                        </label>
+                        <label class="flex-1 cursor-pointer">
+                            <input type="radio" name="pet-gender" value="female" class="peer hidden" />
+                            <div
+                                class="py-3 rounded-xl border-2 border-pink-100 text-center font-bold text-sm text-gray-500 peer-checked:border-pink-400 peer-checked:bg-pink-50 peer-checked:text-pink-600 transition-all">
+                                <i class="fa-solid fa-venus mr-1"></i> Female
+                            </div>
+                        </label>
+                    </div>
+                </div>
+                <!-- Age & Weight -->
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1.5">Age (months)</label>
+                        <input type="number" id="form-age" min="0" placeholder="e.g. 12"
+                            class="w-full px-4 py-3 rounded-xl border border-pink-100 focus:border-[#d94b68] focus:ring-2 focus:ring-[#d94b68]/20 outline-none text-sm font-medium" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1.5">Weight (kg)</label>
+                        <input type="number" id="form-weight" min="0" step="0.1" placeholder="e.g. 5.5"
+                            class="w-full px-4 py-3 rounded-xl border border-pink-100 focus:border-[#d94b68] focus:ring-2 focus:ring-[#d94b68]/20 outline-none text-sm font-medium" />
+                    </div>
+                </div>
+                <!-- Color -->
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1.5">Color</label>
+                    <input type="text" id="form-color" placeholder="e.g. Golden, Black, Tabby..."
+                        class="w-full px-4 py-3 rounded-xl border border-pink-100 focus:border-[#d94b68] focus:ring-2 focus:ring-[#d94b68]/20 outline-none text-sm font-medium" />
+                </div>
+                <button type="submit"
+                    class="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#d94b68] to-[#e06080] text-white font-bold text-sm hover:shadow-lg transition-all mt-2">
+                    <i class="fa-solid fa-check mr-2"></i> <span id="modal-btn-text">Add Pet</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Detail Modal -->
+    <div id="detail-overlay"
+        class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4"
+        onclick="if(event.target===this)closeDetail()">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+            <div id="detail-content"></div>
+        </div>
+    </div>
+
+    <script>
+        let allPets = [];
+
+        // ---- Helpers ----
+        function formatAge(months) {
+            if (!months || months <= 0) return 'Unknown';
+            if (months < 12) return months + ' months';
+            const y = Math.floor(months / 12);
+            const m = months % 12;
+            return m > 0 ? `${y}y ${m}m` : `${y} year${y > 1 ? 's' : ''}`;
+        }
+
+        // ---- Load pets ----
+        async function loadPets() {
+            try {
+                const res = await fetch('/api/pets');
+                allPets = await res.json();
+                renderPets();
+            } catch (err) {
+                console.error('Error loading pets:', err);
+            }
+        }
+
+        function renderPets() {
+            const grid = document.getElementById('pets-grid');
+            const empty = document.getElementById('empty-state');
+            if (allPets.length === 0) { grid.classList.add('hidden'); empty.classList.remove('hidden'); return; }
+            empty.classList.add('hidden');
+            grid.classList.remove('hidden');
+            grid.innerHTML = allPets.map(pet => `
+        <div class="pet-card bg-white rounded-2xl border border-pink-100 shadow-sm overflow-hidden cursor-pointer" onclick="showDetail(${pet.id})">
+          <div class="h-44 bg-gradient-to-br from-pink-50 to-pink-100 flex items-center justify-center relative">
+            ${pet.image_data && pet.image_data.startsWith('/uploads')
+                    ? `<img src="${pet.image_data}" class="w-full h-full object-cover" />`
+                    : `<i class="fa-solid fa-${pet.pet_type === 'cat' ? 'cat' : 'dog'} text-6xl text-[#d94b68]/20"></i>`}
+            <div class="absolute top-3 left-3">
+              <span class="text-xs font-bold px-2.5 py-1 rounded-full ${pet.pet_type === 'cat' ? 'bg-purple-500/90 text-white' : 'bg-blue-500/90 text-white'} backdrop-blur-sm">
+                <i class="fa-solid fa-${pet.pet_type === 'cat' ? 'cat' : 'dog'} mr-1"></i>${pet.pet_type === 'cat' ? 'Cat' : 'Dog'}
+              </span>
+              ${pet.gender ? `<span class="ml-1 text-xs font-bold px-2 py-1 rounded-full ${pet.gender === 'male' ? 'bg-blue-100 text-blue-600' : 'bg-pink-100 text-pink-600'}">
+                <i class="fa-solid fa-${pet.gender === 'male' ? 'mars' : 'venus'}"></i>
+              </span>` : ''}
+            </div>
+            <div class="absolute top-3 right-3 flex gap-2">
+              <button onclick="event.stopPropagation();editPet(${pet.id})" class="w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center text-gray-500 hover:text-[#d94b68] hover:bg-white transition-all shadow-sm">
+                <i class="fa-solid fa-pen text-xs"></i>
+              </button>
+              <button onclick="event.stopPropagation();deletePet(${pet.id},'${pet.name}')" class="w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center text-gray-500 hover:text-red-500 hover:bg-white transition-all shadow-sm">
+                <i class="fa-solid fa-trash text-xs"></i>
+              </button>
+            </div>
+          </div>
+          <div class="p-5">
+            <h3 class="text-lg font-extrabold text-gray-900 mb-1">${pet.name}</h3>
+            <p class="text-sm text-gray-500 font-medium mb-3">${pet.breed || 'Unknown breed'}${pet.color ? ' · ' + pet.color : ''}</p>
+            <div class="flex gap-4 text-xs text-gray-400 font-semibold">
+              <span><i class="fa-solid fa-cake-candles text-[#d94b68]/60 mr-1"></i>${formatAge(pet.age_months)}</span>
+              <span><i class="fa-solid fa-weight-scale text-[#d94b68]/60 mr-1"></i>${pet.weight_kg > 0 ? pet.weight_kg + ' kg' : 'N/A'}</span>
+            </div>
+          </div>
+        </div>
+      `).join('');
+        }
+
+        // ---- Detail View ----
+        async function showDetail(petId) {
+            const pet = allPets.find(p => p.id === petId);
+            if (!pet) return;
+            const [whRes, hnRes] = await Promise.all([
+                fetch(`/api/pets/${petId}/weight-history`),
+                fetch(`/api/pets/${petId}/health-notes`)
+            ]);
+            const weightHistory = await whRes.json();
+            const healthNotes = await hnRes.json();
+
+            document.getElementById('detail-content').innerHTML = `
+        <div class="relative">
+          <div class="h-52 bg-gradient-to-br from-pink-100 to-pink-200 flex items-center justify-center">
+            ${pet.image_data && pet.image_data.startsWith('/uploads')
+                    ? `<img src="${pet.image_data}" class="w-full h-full object-cover" />`
+                    : `<i class="fa-solid fa-${pet.pet_type === 'cat' ? 'cat' : 'dog'} text-7xl text-[#d94b68]/20"></i>`}
+          </div>
+          <button onclick="closeDetail()" class="absolute top-3 right-3 w-9 h-9 rounded-full bg-black/40 text-white flex items-center justify-center hover:bg-black/60 transition-colors">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <div class="p-6">
+          <h2 class="text-2xl font-extrabold text-gray-900 mb-1">${pet.name}</h2>
+          <p class="text-gray-500 font-medium mb-4">${pet.breed || 'Unknown breed'}</p>
+
+          <!-- Info grid -->
+          <div class="grid grid-cols-2 gap-3 mb-6">
+            <div class="bg-pink-50 rounded-xl p-3 text-center">
+              <div class="text-xs font-bold text-gray-400 uppercase mb-1">Type</div>
+              <div class="font-bold text-gray-800"><i class="fa-solid fa-${pet.pet_type === 'cat' ? 'cat' : 'dog'} text-[#d94b68] mr-1"></i>${pet.pet_type === 'cat' ? 'Cat' : 'Dog'}</div>
+            </div>
+            <div class="bg-pink-50 rounded-xl p-3 text-center">
+              <div class="text-xs font-bold text-gray-400 uppercase mb-1">Gender</div>
+              <div class="font-bold text-gray-800">${pet.gender ? (pet.gender === 'male' ? '<i class="fa-solid fa-mars text-blue-500 mr-1"></i>Male' : '<i class="fa-solid fa-venus text-pink-500 mr-1"></i>Female') : 'N/A'}</div>
+            </div>
+            <div class="bg-pink-50 rounded-xl p-3 text-center">
+              <div class="text-xs font-bold text-gray-400 uppercase mb-1">Age</div>
+              <div class="font-bold text-gray-800"><i class="fa-solid fa-cake-candles text-[#d94b68] mr-1"></i>${formatAge(pet.age_months)}</div>
+            </div>
+            <div class="bg-pink-50 rounded-xl p-3 text-center">
+              <div class="text-xs font-bold text-gray-400 uppercase mb-1">Weight</div>
+              <div class="font-bold text-gray-800"><i class="fa-solid fa-weight-scale text-[#d94b68] mr-1"></i>${pet.weight_kg > 0 ? pet.weight_kg + ' kg' : 'N/A'}</div>
+            </div>
+            ${pet.color ? `<div class="bg-pink-50 rounded-xl p-3 text-center col-span-2">
+              <div class="text-xs font-bold text-gray-400 uppercase mb-1">Color</div>
+              <div class="font-bold text-gray-800"><i class="fa-solid fa-palette text-[#d94b68] mr-1"></i>${pet.color}</div>
+            </div>` : ''}
+          </div>
+
+          <!-- Weight History -->
+          <div class="mb-5">
+            <h3 class="text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">
+              <i class="fa-solid fa-chart-line text-[#d94b68]"></i> Weight History
+            </h3>
+            <div class="flex gap-2 mb-3">
+              <input type="number" id="new-weight-${petId}" min="0" step="0.1" placeholder="Weight (kg)"
+                class="flex-1 px-3 py-2 rounded-lg border border-pink-100 text-sm focus:border-[#d94b68] outline-none" />
+              <button onclick="addWeight(${petId})" class="px-4 py-2 rounded-lg bg-gray-900 text-white text-xs font-bold hover:bg-gray-800">
+                <i class="fa-solid fa-plus mr-1"></i> Log
+              </button>
+            </div>
+            ${weightHistory.length > 0
+                    ? `<div class="space-y-1.5 max-h-32 overflow-y-auto">${weightHistory.slice(0, 10).map(w => `
+                <div class="flex justify-between text-xs bg-gray-50 rounded-lg px-3 py-2">
+                  <span class="font-bold text-gray-700">${w.weight_kg} kg</span>
+                  <span class="text-gray-400">${new Date(w.recorded_date).toLocaleDateString()}</span>
+                </div>`).join('')}</div>`
+                    : `<p class="text-xs text-gray-400">No weight records yet.</p>`}
+          </div>
+
+          <!-- Health Notes -->
+          <div class="mb-4">
+            <h3 class="text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">
+              <i class="fa-solid fa-notes-medical text-[#d94b68]"></i> Health Notes
+            </h3>
+            <div class="flex gap-2 mb-3">
+              <input type="text" id="new-note-${petId}" placeholder="Add a health note..."
+                class="flex-1 px-3 py-2 rounded-lg border border-pink-100 text-sm focus:border-[#d94b68] outline-none" />
+              <button onclick="addNote(${petId})" class="px-4 py-2 rounded-lg bg-gray-900 text-white text-xs font-bold hover:bg-gray-800">
+                <i class="fa-solid fa-plus mr-1"></i> Add
+              </button>
+            </div>
+            ${healthNotes.length > 0
+                    ? `<div class="space-y-1.5 max-h-32 overflow-y-auto">${healthNotes.map(n => `
+                <div class="flex justify-between items-center text-xs bg-gray-50 rounded-lg px-3 py-2">
+                  <span class="text-gray-700">${n.note}</span>
+                  <div class="flex items-center gap-2 flex-shrink-0">
+                    <span class="text-gray-400">${new Date(n.created_at).toLocaleDateString()}</span>
+                    <button onclick="deleteNote(${petId},${n.id})" class="text-red-400 hover:text-red-600"><i class="fa-solid fa-xmark"></i></button>
+                  </div>
+                </div>`).join('')}</div>`
+                    : `<p class="text-xs text-gray-400">No health notes yet.</p>`}
+          </div>
+
+          <!-- Quick actions -->
+          <div class="flex gap-3 pt-2">
+            <a href="/vaccines" class="flex-1 py-3 rounded-xl bg-pink-50 text-center text-sm font-bold text-[#d94b68] hover:bg-pink-100 transition-all">
+              <i class="fa-solid fa-syringe mr-1"></i> Vaccines
+            </a>
+            <button onclick="closeDetail();editPet(${petId})" class="flex-1 py-3 rounded-xl bg-gray-900 text-white text-sm font-bold hover:bg-gray-800 transition-all">
+              <i class="fa-solid fa-pen mr-1"></i> Edit
+            </button>
+          </div>
+        </div>
+      `;
+            document.getElementById('detail-overlay').classList.remove('hidden');
+        }
+
+        function closeDetail() { document.getElementById('detail-overlay').classList.add('hidden'); }
+
+        async function addWeight(petId) {
+            const input = document.getElementById(`new-weight-${petId}`);
+            const val = parseFloat(input.value);
+            if (!val || val <= 0) return alert('Enter a valid weight');
+            await fetch(`/api/pets/${petId}/weight-history`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ weight_kg: val })
+            });
+            input.value = '';
+            loadPets();
+            showDetail(petId);
+        }
+
+        async function addNote(petId) {
+            const input = document.getElementById(`new-note-${petId}`);
+            const note = input.value.trim();
+            if (!note) return alert('Enter a note');
+            await fetch(`/api/pets/${petId}/health-notes`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ note })
+            });
+            input.value = '';
+            showDetail(petId);
+        }
+
+        async function deleteNote(petId, noteId) {
+            await fetch(`/api/pets/${petId}/health-notes/${noteId}`, { method: 'DELETE' });
+            showDetail(petId);
+        }
+
+        // ---- Modal ----
+        function openModal(petId = null) {
+            document.getElementById('modal-overlay').classList.remove('hidden');
+            if (petId) {
+                const pet = allPets.find(p => p.id === petId);
+                document.getElementById('modal-title').textContent = 'Edit Pet';
+                document.getElementById('modal-btn-text').textContent = 'Save Changes';
+                document.getElementById('edit-pet-id').value = petId;
+                document.getElementById('form-name').value = pet.name;
+                document.getElementById('form-breed').value = pet.breed || '';
+                document.getElementById('form-age').value = pet.age_months || '';
+                document.getElementById('form-weight').value = pet.weight_kg || '';
+                document.getElementById('form-color').value = pet.color || '';
+                document.querySelector(`input[name="pet-type"][value="${pet.pet_type || 'dog'}"]`).checked = true;
+                if (pet.gender) document.querySelector(`input[name="pet-gender"][value="${pet.gender}"]`).checked = true;
+            } else {
+                document.getElementById('modal-title').textContent = 'Add New Pet';
+                document.getElementById('modal-btn-text').textContent = 'Add Pet';
+                document.getElementById('edit-pet-id').value = '';
+                document.getElementById('pet-form').reset();
+            }
+        }
+        function closeModal() { document.getElementById('modal-overlay').classList.add('hidden'); }
+        function editPet(id) { openModal(id); }
+
+        // ---- Save Pet ----
+        async function savePet(e) {
+            e.preventDefault();
+            const petId = document.getElementById('edit-pet-id').value;
+            const genderEl = document.querySelector('input[name="pet-gender"]:checked');
+            const data = {
+                name: document.getElementById('form-name').value.trim(),
+                breed: document.getElementById('form-breed').value.trim(),
+                pet_type: document.querySelector('input[name="pet-type"]:checked').value,
+                gender: genderEl ? genderEl.value : '',
+                age_months: parseInt(document.getElementById('form-age').value) || 0,
+                weight_kg: parseFloat(document.getElementById('form-weight').value) || 0,
+                color: document.getElementById('form-color').value.trim()
+            };
+            try {
+                const url = petId ? `/api/pets/${petId}` : '/api/pets';
+                const method = petId ? 'PUT' : 'POST';
+                await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+                closeModal();
+                loadPets();
+            } catch (err) { alert('Error: ' + err.message); }
+        }
+
+        // ---- Delete Pet ----
+        async function deletePet(id, name) {
+            if (!confirm(`Delete "${name}"? This will also remove their vaccine records.`)) return;
+            try {
+                await fetch(`/api/pets/${id}`, { method: 'DELETE' });
+                loadPets();
+            } catch (err) { alert('Error: ' + err.message); }
+        }
+
+        loadPets();
+    </script>
+</body>
+
+</html>

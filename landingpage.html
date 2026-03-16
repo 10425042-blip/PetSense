@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Screen 1</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Font Awesome -->
+  <script>
+    window.FontAwesomeConfig = {
+      autoReplaceSvg: 'nest',
+    };
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous"
+    referrerpolicy="no-referrer"></script>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Roboto:wght@100;300;400;500;700;900&family=Open+Sans:wght@300;400;500;600;700;800&family=Lato:wght@100;300;400;700;900&family=Montserrat:wght@100;200;300;400;500;600;700;800;900&family=Poppins:wght@100;200;300;400;500;600;700;800;900&family=Raleway:wght@100;200;300;400;500;600;700;800;900&family=Nunito:wght@200;300;400;500;600;700;800;900&family=Ubuntu:wght@300;400;500;700&family=Playfair+Display:wght@400;500;600;700;800;900&family=Merriweather:wght@300;400;700;900&family=PT+Sans:wght@400;700&family=Oswald:wght@200;300;400;500;600;700&family=Mukta:wght@200;300;400;500;600;700;800&family=Work+Sans:wght@100;200;300;400;500;600;700;800;900&family=Roboto+Mono:wght@100;200;300;400;500;600;700&family=Source+Code+Pro:wght@200;300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@100;200;300;400;500;600;700&family=JetBrains+Mono:wght@100;200;300;400;500;600;700;800&family=Fira+Code:wght@300;400;500;600;700&family=Inconsolata:wght@200;300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&family=Ubuntu+Mono:wght@400;700&display=swap">
+
+  <style>
+    * {
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #ffffff;
+    }
+
+    .h-screen {
+      height: 100vh;
+    }
+
+    .min-h-screen {
+      min-height: 100vh;
+    }
+
+    .fa,
+    .fas,
+    .far,
+    .fal,
+    .fab {
+      font-family: "Font Awesome 6 Free", "Font Awesome 6 Brands" !important;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen m-0 p-0 bg-white">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+    :root {
+      --font-sans: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .animate-fade-in-up {
+      animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    .delay-100 {
+      animation-delay: 100ms;
+    }
+
+    .delay-200 {
+      animation-delay: 200ms;
+    }
+
+    .delay-300 {
+      animation-delay: 300ms;
+    }
+
+    .delay-400 {
+      animation-delay: 400ms;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Custom scrollbar hiding */
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .hide-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+
+  <div class="relative min-h-screen w-full overflow-hidden bg-[#e8a0a8]">
+    <!-- 4K Background Image -->
+    <div class="absolute inset-0 z-0 bg-cover bg-no-repeat"
+      style="background-image: url('https://nivbeqiuhotuxbmcvuxt.supabase.co/storage/v1/object/public/project-images/b53ab121-7eda-4ba7-9dd8-65d1e8db2fae/e1cf814f-357f-4a9b-a14b-3952442666b4.png'); background-position: 70% center; @media (min-width: 1024px) { background-position: center; }">
+    </div>
+
+    <!-- Subtle gradient overlay for text readability on smaller screens if needed -->
+    <div class="absolute inset-0 z-0 bg-gradient-to-r from-[#c76e7a]/95 via-[#d4868f]/70 to-transparent"></div>
+
+    <!-- Header / Navigation -->
+    <header id="header-main"
+      class="relative z-20 w-full px-6 py-8 md:px-12 lg:px-20 flex items-center justify-between animate-fade-in-up">
+      <!-- Logo -->
+      <div class="flex items-center gap-3 cursor-pointer group">
+        <div
+          class="w-10 h-10 rounded-xl bg-white/90 backdrop-blur-sm shadow-sm flex items-center justify-center text-[#d94b68] group-hover:scale-105 transition-transform duration-300">
+          <i class="fa-solid fa-paw text-xl"></i>
+        </div>
+        <span class="text-2xl font-extrabold tracking-tight text-gray-900">Pet<span
+            class="text-[#d94b68]">Sense</span></span>
+      </div>
+
+      <!-- Desktop Navigation -->
+      <nav
+        class="hidden lg:flex items-center gap-10 bg-white/40 backdrop-blur-md px-8 py-3.5 rounded-full border border-white/50 shadow-sm">
+        <a href="/predict"
+          class="text-sm font-bold text-gray-900 hover:text-[#d94b68] transition-colors relative after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-0.5 after:bg-[#d94b68] hover:after:w-full after:transition-all after:duration-300">Predict
+          Breed</a>
+        <a href="/pets" class="text-sm font-semibold text-gray-700 hover:text-gray-900 transition-colors">Store Pet</a>
+        <a href="/vaccines" class="text-sm font-semibold text-gray-700 hover:text-gray-900 transition-colors">Remind
+          Vaccine Date</a>
+      </nav>
+
+      <!-- Right Actions -->
+      <div class="hidden md:flex items-center gap-4">
+        <a href="/predict"
+          class="text-sm font-bold bg-gray-900 text-white px-6 py-3 rounded-full hover:bg-gray-800 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 inline-block">
+          Get Started
+        </a>
+      </div>
+
+      <!-- Mobile Menu Toggle -->
+      <button
+        class="lg:hidden w-10 h-10 rounded-full bg-white/50 backdrop-blur-sm flex items-center justify-center text-gray-900">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+    </header>
+
+    <!-- Main Content -->
+    <main id="main-content" class="relative z-10 w-full h-[calc(100vh-104px)] px-6 md:px-12 lg:px-20 flex items-center">
+      <div class="w-full max-w-2xl pt-10 lg:pt-0">
+
+        <!-- Badge -->
+        <div
+          class="animate-fade-in-up delay-100 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/60 backdrop-blur-md border border-white/60 shadow-sm mb-8">
+          <span class="flex h-2 w-2 rounded-full bg-[#d94b68] animate-pulse"></span>
+          <span class="text-xs font-bold tracking-wide text-gray-800 uppercase">Custom-Trained AI Model</span>
+        </div>
+
+        <!-- Headline -->
+        <h1
+          class="animate-fade-in-up delay-200 text-5xl md:text-6xl lg:text-[5.5rem] font-extrabold text-gray-900 leading-[1.05] tracking-tighter mb-6">
+          Know your pet's <br />
+          <span class="relative inline-block">
+            <span class="relative z-10 text-white drop-shadow-[0_2px_10px_rgba(107,16,40,0.4)]"
+              style="text-shadow: 0 1px 2px rgba(0,0,0,0.15);">true heritage.</span>
+            <svg class="absolute w-full h-4 -bottom-1 left-0 -z-10 text-[#6b1028]/50" viewBox="0 0 200 9" fill="none"
+              xmlns="http://www.w3.org/2000/svg">
+              <path d="M2.00023 6.99999C43.3336 2.66666 138.4 -3.40001 198.001 6.99999" stroke="currentColor"
+                stroke-width="4" stroke-linecap="round" />
+            </svg>
+          </span>
+        </h1>
+
+        <!-- Description -->
+        <p
+          class="animate-fade-in-up delay-300 text-lg md:text-xl text-gray-800/80 font-medium mb-10 leading-relaxed max-w-lg">
+          Instantly identify the breed of any cat or dog with our advanced AI. Upload a photo to uncover their unique
+          mix, track vaccines, and manage their profile all in one place.
+        </p>
+
+        <!-- CTA Buttons -->
+        <div class="animate-fade-in-up delay-400 flex flex-col sm:flex-row gap-4">
+          <a href="/predict"
+            class="group relative px-8 py-4 rounded-full bg-gray-900 text-white font-bold text-lg overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all duration-300 hover:-translate-y-1 flex items-center justify-center gap-3 no-underline">
+            <div
+              class="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]">
+            </div>
+            <i class="fa-solid fa-camera text-white/80 group-hover:scale-110 transition-transform"></i>
+            Scan Pet Photo
+          </a>
+
+          <a href="/predict"
+            class="px-8 py-4 rounded-full bg-white/40 backdrop-blur-md text-gray-900 font-bold text-lg hover:bg-white/60 transition-all duration-300 border border-white/50 flex items-center justify-center gap-2 group no-underline">
+            See how it works
+            <i class="fa-solid fa-arrow-right text-sm group-hover:translate-x-1 transition-transform"></i>
+          </a>
+        </div>
+
+      </div>
+    </main>
+
+    <!-- Floating decorative elements (optional, adds depth) -->
+    <div class="absolute bottom-10 left-10 w-24 h-24 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
+    <div class="absolute top-40 left-1/3 w-32 h-32 bg-[#d94b68]/10 rounded-full blur-3xl pointer-events-none"></div>
+  </div>
+</body>
+
+</html>
