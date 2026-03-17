@@ -18,25 +18,33 @@ CORS(app)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, 'petsense.db')
-MODEL_PATH = os.path.join(BASE_DIR, 'pet_breed_model.h5')
+MODEL_PATH = os.path.join(BASE_DIR, 'pet_breed_model.tflite')
 CLASSES_PATH = os.path.join(BASE_DIR, 'class_names.json')
 UPLOAD_FOLDER = os.path.join(BASE_DIR, 'uploads')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # ============================================================
-# Load AI model + class names
+# Load AI model + class names (TFLite version)
 # ============================================================
-model = None
+interpreter = None
 class_names = []
 
 def load_model():
-    global model, class_names
+    global interpreter, class_names
     try:
-        import tensorflow as tf
-        model = tf.keras.models.load_model(MODEL_PATH)
+        # Thu import tflite_runtime truoc (cho deploy)
+        try:
+            from tflite_runtime.interpreter import Interpreter
+        except ImportError:
+            # Fallback: dung tf.lite neu chay local co TensorFlow
+            import tensorflow as tf
+            Interpreter = tf.lite.Interpreter
+
+        interpreter = Interpreter(model_path=MODEL_PATH)
+        interpreter.allocate_tensors()
         with open(CLASSES_PATH, 'r') as f:
             class_names = json.load(f)
-        print(f"[OK] Model loaded - {len(class_names)} breeds")
+        print(f"[OK] TFLite model loaded - {len(class_names)} breeds")
     except Exception as e:
         print(f"[ERROR] Could not load model: {e}")
 
@@ -156,7 +164,7 @@ def serve_upload(filename):
 # ============================================================
 @app.route('/api/predict', methods=['POST'])
 def predict_breed():
-    if model is None:
+    if interpreter is None:
         return jsonify({'error': 'Model not loaded'}), 500
 
     try:
@@ -188,11 +196,16 @@ def predict_breed():
         img = Image.open(BytesIO(image_data)).convert('RGB')
         img.save(img_path, 'JPEG')
         img_resized = img.resize((224, 224))
-        img_array = np.array(img_resized) / 255.0
+        img_array = np.array(img_resized, dtype=np.float32) / 255.0
         img_array = np.expand_dims(img_array, axis=0)
 
-        # Run prediction
-        predictions = model.predict(img_array, verbose=0)[0]
+        # Run prediction with TFLite
+        input_details = interpreter.get_input_details()
+        output_details = interpreter.get_output_details()
+        interpreter.set_tensor(input_details[0]['index'], img_array)
+        interpreter.invoke()
+        predictions = interpreter.get_tensor(output_details[0]['index'])[0]
+
         top_indices = predictions.argsort()[-3:][::-1]
 
         results = []
@@ -399,6 +412,7 @@ def delete_vaccine(vaccine_id):
 # Run server
 # ============================================================
 if __name__ == '__main__':
-    print("\n  PetSense Server Running!")
-    print("  http://127.0.0.1:5000\n")
-    app.run(debug=True, port=5000)
+    port = int(os.environ.get('PORT', 5000))
+    print(f"\n  PetSense Server Running!")
+    print(f"  http://127.0.0.1:{port}\n")
+    app.run(debug=True, host='0.0.0.0', port=port)
