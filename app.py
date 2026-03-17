@@ -32,13 +32,31 @@ class_names = []
 def load_model():
     global interpreter, class_names
     try:
-        # Thu import tflite_runtime truoc (cho deploy)
+        # Thu nhieu package khac nhau de tim Interpreter
+        Interpreter = None
+
+        # 1. Thu ai_edge_litert (package moi nhat cua Google)
         try:
-            from tflite_runtime.interpreter import Interpreter
+            from ai_edge_litert.interpreter import Interpreter as _Int
+            Interpreter = _Int
+            print("[INFO] Using ai_edge_litert")
         except ImportError:
-            # Fallback: dung tf.lite neu chay local co TensorFlow
+            pass
+
+        # 2. Thu tflite_runtime
+        if Interpreter is None:
+            try:
+                from tflite_runtime.interpreter import Interpreter as _Int
+                Interpreter = _Int
+                print("[INFO] Using tflite_runtime")
+            except ImportError:
+                pass
+
+        # 3. Fallback: dung tf.lite neu chay local co TensorFlow
+        if Interpreter is None:
             import tensorflow as tf
             Interpreter = tf.lite.Interpreter
+            print("[INFO] Using tensorflow.lite")
 
         interpreter = Interpreter(model_path=MODEL_PATH)
         interpreter.allocate_tensors()
@@ -46,7 +64,9 @@ def load_model():
             class_names = json.load(f)
         print(f"[OK] TFLite model loaded - {len(class_names)} breeds")
     except Exception as e:
+        import traceback
         print(f"[ERROR] Could not load model: {e}")
+        traceback.print_exc()
 
 load_model()
 
